@@ -2,6 +2,7 @@ import { OpenAI } from "langchain/llms/openai";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import z from "zod";
 import { PromptTemplate } from "langchain/prompts";
+import { Document } from "langchain/document";
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
@@ -50,4 +51,15 @@ export const analyze = async (content) => {
   } catch (e) {
     console.log(e);
   }
+};
+
+const qa = async (question, entries) => {
+  const docs = entries.map((entry) => {
+    return new Document({
+      pageContent: entry.content,
+      metadata: { id: entry.id, createdAt: entry.createdAt },
+    });
+  });
+
+  const model = new OpenAI({ temperature: 0, modelName: "gpt-3.5-turbo" });
 };
